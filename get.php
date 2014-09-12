@@ -2,7 +2,7 @@
     //設定執行時間上限
     set_time_limit(0);
     //將網頁編碼設定為UTF8
-    header("Content-type: text/html; charset=utf-8");
+    @header("Content-type: text/html; charset=utf-8");
 
     /**
      * 爬蟲程式的Class
@@ -52,10 +52,14 @@
             return $y . date('.m.d', $timestamp);
         }
 
+        /**
+         * 輸出LOG
+         * @param string $str 要顯示的文字
+         */
         public function printLog($str) {
             echo $str;
-            ob_flush();
-            flush();
+            @ob_flush();
+            @flush();
         }
 
         /**
@@ -189,8 +193,6 @@
                 $array = $this->parseJSON($t);
                 $count = count($array);
                 $this->printLog("解析JSON完成!共有{$count}筆資料\n");
-                ob_flush();
-                flush();
                 //寫入資料庫
                 $start_time = microtime(true);
                 $query = "INSERT INTO `farmtransdata`.`raw` (`date`, `code`, `name`, `marketCode`, `market`, `priceTop`, `priceMid`, `priceBottom`, `price`, `quantity`, `date_int`) VALUES ";
@@ -202,8 +204,6 @@
                 $this->db->query($query . implode(",", $tmp));
                 $this->printLog(date('Y-m-d', $t) . "的所有資料寫入資料庫完成\n");
                 $this->printLog("寫入資料花費時間:\t" . (microtime(true) - $start_time) . "sec\n\n");
-                ob_flush();
-                flush();
                 //將時間往前一天
                 $t -= 86400;
             }
